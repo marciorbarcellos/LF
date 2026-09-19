@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import ConfirmModal from "@/app/components/ConfirmModal";
+import Paginacao from "@/app/components/Paginacao";
 
 function Dezena({ numero, estado }) {
   const classe =
@@ -48,14 +49,18 @@ export default function ListaJogos() {
   const [busca, setBusca] = useState("");
   const [selecionados, setSelecionados] = useState(new Set());
   const [modalAberto, setModalAberto] = useState(false);
+  const [pagina, setPagina] = useState(1);
+  const [paginacao, setPaginacao] = useState(null);
 
-  async function carregar() {
+  async function carregar(paginaAlvo = pagina) {
     setCarregando(true);
     try {
-      const res = await fetch("/api/jogos?limit=500");
+      const res = await fetch(`/api/jogos?page=${paginaAlvo}&pageSize=100`);
       const data = await res.json();
       if (!data.ok) throw new Error(data.error);
       setJogos(data.jogos);
+      setPaginacao(data.paginacao ?? null);
+      setPagina(paginaAlvo);
     } catch (e) {
       setErro(e.message);
     } finally {
@@ -64,7 +69,7 @@ export default function ListaJogos() {
   }
 
   useEffect(() => {
-    carregar();
+    carregar(1);
   }, []);
 
   const grupos = useMemo(() => agruparPorConcurso(jogos), [jogos]);
@@ -163,6 +168,7 @@ export default function ListaJogos() {
         </div>
 
         {erro && <p className="mensagem-erro">{erro}</p>}
+        <p className="texto-secundario">A busca filtra apenas os jogos da página atual.</p>
 
         {gruposFiltrados.length > 0 && (
           <label className="linha-selecionar-todos">
@@ -238,6 +244,8 @@ export default function ListaJogos() {
             </div>
           );
         })}
+
+        <Paginacao paginacao={paginacao} onMudarPagina={carregar} />
       </div>
 
       <ConfirmModal

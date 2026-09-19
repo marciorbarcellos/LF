@@ -1,5 +1,6 @@
 import Link from "next/link";
 import GeradorJogo from "@/app/components/GeradorJogo";
+import BotaoTopo from "@/app/components/BotaoTopo";
 
 export const dynamic = "force-dynamic";
 
@@ -19,6 +20,8 @@ export default function Home() {
           de resultados de jogos.
         </p>
       </main>
+
+      <BotaoTopo />
     </>
   );
 }

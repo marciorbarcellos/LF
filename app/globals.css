@@ -365,3 +365,73 @@ main {
 .modal-botao-confirmar:not(:disabled):hover {
   background: #841019;
 }
+
+.paginacao {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--cor-borda);
+}
+
+.paginacao-botoes {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.paginacao-botao {
+  background: var(--cor-card);
+  color: var(--cor-primaria);
+  border: 1px solid var(--cor-primaria);
+  border-radius: 8px;
+  padding: 0.45rem 0.9rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.paginacao-botao:disabled {
+  color: var(--cor-neutro);
+  border-color: var(--cor-borda);
+  cursor: not-allowed;
+}
+
+.paginacao-botao:not(:disabled):hover {
+  background: rgba(147, 0, 137, 0.08);
+}
+
+.botao-topo {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--cor-primaria);
+  color: #fff;
+  border: none;
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(31, 42, 71, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+.botao-topo.visivel {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.botao-topo:hover {
+  background: #7a0070;
+}

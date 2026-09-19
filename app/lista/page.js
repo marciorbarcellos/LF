@@ -1,4 +1,5 @@
 import ListaJogos from "@/app/components/ListaJogos";
+import BotaoTopo from "@/app/components/BotaoTopo";
 
 export const dynamic = "force-dynamic";
 
@@ -13,6 +14,8 @@ export default function Lista() {
       <main>
         <ListaJogos />
       </main>
+
+      <BotaoTopo />
     </>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Paginacao from "@/app/components/Paginacao";
 
 function Dezena({ numero, estado }) {
   const classe =
@@ -34,22 +35,26 @@ export default function GeradorJogo() {
   const [avisoFonteDados, setAvisoFonteDados] = useState(null);
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState(null);
+  const [pagina, setPagina] = useState(1);
+  const [paginacao, setPaginacao] = useState(null);
 
-  async function carregarJogos() {
+  async function carregarJogos(paginaAlvo = pagina) {
     try {
-      const res = await fetch("/api/jogos");
+      const res = await fetch(`/api/jogos?page=${paginaAlvo}&pageSize=100`);
       const data = await res.json();
       if (!data.ok) throw new Error(data.error);
       setJogos(data.jogos);
       setUltimoConcurso(data.ultimoConcurso);
       setAvisoFonteDados(data.avisoFonteDados ?? null);
+      setPaginacao(data.paginacao ?? null);
+      setPagina(paginaAlvo);
     } catch (e) {
       setErro(e.message);
     }
   }
 
   useEffect(() => {
-    carregarJogos();
+    carregarJogos(1);
   }, []);
 
   async function gerarJogos() {
@@ -63,7 +68,7 @@ export default function GeradorJogo() {
       });
       const data = await res.json();
       if (!data.ok) throw new Error(data.error);
-      await carregarJogos();
+      await carregarJogos(1);
     } catch (e) {
       setErro(e.message);
     } finally {
@@ -170,6 +175,8 @@ export default function GeradorJogo() {
             ))}
           </div>
         ))}
+
+        <Paginacao paginacao={paginacao} onMudarPagina={carregarJogos} />
       </div>
     </>
   );

@@ -73,15 +73,21 @@ export async function DELETE(request) {
 
 export async function GET(request) {
   try {
-    const limit = Number(new URL(request.url).searchParams.get("limit")) || 20;
+    const params = new URL(request.url).searchParams;
+    const pageSize = Math.min(Math.max(Number(params.get("pageSize")) || 100, 1), 100);
+    const page = Math.max(Number(params.get("page")) || 1, 1);
 
     const db = await getDb();
+    const total = await db.collection("jogosGerados").countDocuments({});
+    const totalPaginas = Math.max(Math.ceil(total / pageSize), 1);
     const jogos = await db
       .collection("jogosGerados")
       .find({})
       .sort({ criadoEm: -1 })
-      .limit(limit)
+      .skip((page - 1) * pageSize)
+      .limit(pageSize)
       .toArray();
+    const paginacao = { page, pageSize, total, totalPaginas };
 
     let ultimo = null;
     try {
@@ -96,6 +102,7 @@ export async function GET(request) {
         ultimoConcurso: null,
         avisoFonteDados: "Fonte de resultados indisponível no momento — conferência temporariamente desativada.",
         jogos: jogos.map((jogo) => ({ ...jogo, conferencia: null })),
+        paginacao,
       });
     }
 
@@ -144,7 +151,7 @@ export async function GET(request) {
       })
     );
 
-    return NextResponse.json({ ok: true, ultimoConcurso: ultimo, jogos: jogosComConferencia });
+    return NextResponse.json({ ok: true, ultimoConcurso: ultimo, jogos: jogosComConferencia, paginacao });
   } catch (error) {
     return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
   }
