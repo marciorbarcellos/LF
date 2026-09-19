@@ -1,6 +1,25 @@
 
-
+conecte o git ao repositório e faça o commit
 https://github.com/marciorbarcellos/LF.git
+
+pegue todas as informações necessárias do site https://loterias.caixa.gov.br/Paginas/Lotofacil.aspx para criar o arquivo C:\projetos\LF\REGRAS\regras.md
+
+o arquivo será utilizado como base para criar o aplicativo mobile responsivo para criar jogos randômicos com a maior chance de acertar a maior quantidade de números do sorteio que possui um total de 25 números
+
+
+
+adicione as informações abaixo ao arquivo C:\projetos\LF\REGRAS\regras.md
+
+o arquivo C:\projetos\LF\SORTEIO\Lotofácil.xlsx sempre será atualizado e ficará disponível no repositório do github com todos os sorteios realizados de modo que deve haver no aplicativo um quadro para visualizar os números sorteados em cada sorteio e fazer uma comparação com os números que foram gerados pelo aplicativo para aquele sorteio e armazenados no banco de dados para saber o números de acertos e de erros de cada concurso
+
+o banco de dados deve ser o MongoBD Atlas crie todo o ambiente e passe as instruções para criar o banco de dados na internet e conectar o aplicativo ao bando de dados
+
+o aplicativo deverá ser acessado por uma url do vercel, portanto, mostre juntamente com as intruções de conexão com o banco de dados MongoDB Atlas as instruções para fazer o deploy automático no vercel sempre que um novo commit é feito no repositório do github
+
+o aplicativo deve usar as mesma paleta de cores do site https://loterias.caixa.gov.br/Paginas/Lotofacil.aspx
+
+
+
 
 
 
