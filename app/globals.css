@@ -79,11 +79,16 @@ main {
   font-size: 0.9rem;
 }
 
-.controles select {
+.controles select,
+.controles .campo-numero {
   padding: 0.5rem 0.75rem;
   border-radius: 8px;
   border: 1px solid var(--cor-borda);
   font-size: 1rem;
+}
+
+.campo-numero {
+  width: 5rem;
 }
 
 .controles button {

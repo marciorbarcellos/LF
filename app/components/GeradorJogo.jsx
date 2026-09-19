@@ -98,18 +98,19 @@ export default function GeradorJogo() {
             ))}
           </select>
 
-          <label htmlFor="quantidadeJogos">Quantos jogos</label>
-          <select
+          <label htmlFor="quantidadeJogos">Quantos jogos (bolão, até 100)</label>
+          <input
             id="quantidadeJogos"
+            type="number"
+            min={1}
+            max={100}
             value={quantidadeJogos}
-            onChange={(e) => setQuantidadeJogos(Number(e.target.value))}
-          >
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
-              <option key={n} value={n}>
-                {n} {n === 1 ? "jogo" : "jogos"}
-              </option>
-            ))}
-          </select>
+            onChange={(e) => {
+              const valor = Number(e.target.value) || 1;
+              setQuantidadeJogos(Math.min(Math.max(valor, 1), 100));
+            }}
+            className="campo-numero"
+          />
 
           <button onClick={gerarJogos} disabled={carregando}>
             {carregando ? "Gerando..." : "Gerar"}

@@ -9,7 +9,7 @@ export async function POST(request) {
   try {
     const body = await request.json().catch(() => ({}));
     const quantidade = Number(body.quantidade) || 15;
-    const quantidadeJogos = Math.min(Math.max(Number(body.quantidadeJogos) || 1, 1), 10);
+    const quantidadeJogos = Math.min(Math.max(Number(body.quantidadeJogos) || 1, 1), 100);
 
     if (quantidade < 15 || quantidade > 20) {
       return NextResponse.json({ ok: false, error: "Quantidade de dezenas deve ser entre 15 e 20." }, { status: 400 });
