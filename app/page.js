@@ -1,46 +1,24 @@
-import { getDb } from "@/lib/mongodb";
+import GeradorJogo from "@/app/components/GeradorJogo";
 
 export const dynamic = "force-dynamic";
 
-async function checarConexao() {
-  try {
-    const db = await getDb();
-    await db.command({ ping: 1 });
-    return { ok: true, db: db.databaseName };
-  } catch (error) {
-    return { ok: false, error: error.message };
-  }
-}
-
-export default async function Home() {
-  const status = await checarConexao();
-
+export default function Home() {
   return (
-    <main>
-      <h1>Lotofácil — Gerador de Jogos</h1>
-      <p style={{ color: "var(--cor-texto-secundario)" }}>
-        Esqueleto inicial do app: Next.js conectado ao MongoDB Atlas.
-      </p>
+    <>
+      <header className="topo">
+        <h1>Lotofácil</h1>
+        <p>Gerador de jogos randômicos</p>
+      </header>
 
-      <div className="card">
-        <h2>Status do banco de dados</h2>
-        {status.ok ? (
-          <span className="status-badge status-ok">
-            Conectado ao banco &quot;{status.db}&quot;
-          </span>
-        ) : (
-          <span className="status-badge status-fail">Falha na conexão: {status.error}</span>
-        )}
-      </div>
+      <main>
+        <GeradorJogo />
 
-      <div className="card">
-        <h2>Exemplo de dezenas</h2>
-        {[1, 5, 9, 12, 15].map((n) => (
-          <span key={n} className="dezena">
-            {String(n).padStart(2, "0")}
-          </span>
-        ))}
-      </div>
-    </main>
+        <p className="aviso">
+          A Lotofácil é um jogo de loteria genuinamente aleatório. Nenhum algoritmo garante ou aumenta a
+          probabilidade real de acerto dos 15 números — este app oferece geração aleatória e conferência
+          de resultados como ferramenta de organização de jogos, não como previsão de resultado.
+        </p>
+      </main>
+    </>
   );
 }

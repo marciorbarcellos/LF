@@ -8,6 +8,7 @@
   --cor-texto-secundario: #4c556c;
   --cor-cta: #ff7200;
   --cor-acerto: #209869;
+  --cor-erro: #a61324;
   --cor-neutro: #a5aab5;
 }
 
@@ -22,10 +23,27 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
 }
 
+.topo {
+  background: var(--cor-primaria);
+  color: #fff;
+  padding: 1.75rem 1rem 2.25rem;
+  text-align: center;
+}
+
+.topo h1 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.topo p {
+  margin: 0.25rem 0 0;
+  opacity: 0.9;
+}
+
 main {
   max-width: 640px;
-  margin: 0 auto;
-  padding: 2rem 1rem;
+  margin: -1.5rem auto 0;
+  padding: 0 1rem 2rem;
 }
 
 .card {
@@ -34,10 +52,82 @@ main {
   border-radius: 12px;
   padding: 1.5rem;
   margin-top: 1.5rem;
+  box-shadow: 0 2px 8px rgba(31, 42, 71, 0.06);
 }
 
-h1 {
-  color: var(--cor-primaria);
+.card h2 {
+  margin-top: 0;
+  color: var(--cor-texto);
+  font-size: 1.15rem;
+}
+
+.texto-secundario {
+  color: var(--cor-texto-secundario);
+  font-size: 0.9rem;
+}
+
+.controles {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.controles label {
+  color: var(--cor-texto-secundario);
+  font-size: 0.9rem;
+}
+
+.controles select {
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--cor-borda);
+  font-size: 1rem;
+}
+
+.controles button {
+  background: var(--cor-primaria);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.controles button:disabled {
+  background: var(--cor-neutro);
+  cursor: not-allowed;
+}
+
+.controles button:not(:disabled):hover {
+  background: #7a0070;
+}
+
+.mensagem-erro {
+  color: var(--cor-erro);
+  font-size: 0.9rem;
+}
+
+.jogo-item {
+  padding: 1rem 0;
+  border-top: 1px solid var(--cor-borda);
+}
+
+.jogo-item:first-child {
+  border-top: none;
+  padding-top: 0.5rem;
+}
+
+.jogo-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--cor-texto-secundario);
 }
 
 .status-badge {
@@ -45,7 +135,7 @@ h1 {
   padding: 0.35rem 0.9rem;
   border-radius: 999px;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
 }
 
 .status-ok {
@@ -55,18 +145,40 @@ h1 {
 
 .status-fail {
   background: rgba(166, 19, 36, 0.12);
-  color: #a61324;
+  color: var(--cor-erro);
+}
+
+.status-pendente {
+  background: rgba(165, 170, 181, 0.2);
+  color: var(--cor-texto-secundario);
 }
 
 .dezena {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   margin: 4px;
   border-radius: 50%;
   background: var(--cor-primaria);
   color: #fff;
   font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.dezena-acerto {
+  background: var(--cor-acerto);
+}
+
+.dezena-erro {
+  background: var(--cor-neutro);
+  color: var(--cor-texto);
+}
+
+.aviso {
+  color: var(--cor-texto-secundario);
+  font-size: 0.8rem;
+  text-align: center;
+  margin-top: 2rem;
 }
