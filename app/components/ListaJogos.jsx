@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import ConfirmModal from "@/app/components/ConfirmModal";
 import Paginacao from "@/app/components/Paginacao";
+import { valorTotal, formatarMoeda } from "@/lib/precos";
 
 function Dezena({ numero, estado }) {
   const classe =
@@ -88,6 +89,7 @@ export default function ListaJogos() {
 
   const grupos = useMemo(() => agruparPorConcurso(jogos), [jogos]);
   const idsListados = useMemo(() => jogos.map((j) => j._id), [jogos]);
+  const jogoMaisRecenteId = pagina === 1 && !buscaAtiva && jogos.length > 0 ? jogos[0]._id : null;
   const todosSelecionados = idsListados.length > 0 && idsListados.every((id) => selecionados.has(id));
 
   function alternarJogo(id) {
@@ -202,11 +204,18 @@ export default function ListaJogos() {
                   onChange={() => alternarGrupo(grupo)}
                 />
                 Concurso {grupo.concursoAlvo ?? "a confirmar"} · {grupo.jogos.length}{" "}
-                {grupo.jogos.length === 1 ? "jogo" : "jogos"}
+                {grupo.jogos.length === 1 ? "jogo" : "jogos"} · {formatarMoeda(valorTotal(grupo.jogos))}
               </label>
 
-              {grupo.jogos.map((jogo) => (
-                <div key={jogo._id} className={"jogo-item" + (selecionados.has(jogo._id) ? " jogo-item-selecionado" : "")}>
+              {grupo.jogos.map((jogo) => {
+                const classes = ["jogo-item"];
+                if (selecionados.has(jogo._id)) classes.push("jogo-item-selecionado");
+                if (jogo._id === jogoMaisRecenteId) classes.push("jogo-item-recente");
+                return (
+                <div key={jogo._id} className={classes.join(" ")}>
+                  {jogo._id === jogoMaisRecenteId && (
+                    <p className="lote-recente-aviso">Aguardando o próximo sorteio · os demais são histórico</p>
+                  )}
                   <div className="jogo-item-header">
                     <label className="jogo-item-checkbox">
                       <input
@@ -244,7 +253,8 @@ export default function ListaJogos() {
                     ))}
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           );
         })}

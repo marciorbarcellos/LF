@@ -435,3 +435,25 @@ main {
 .botao-topo:hover {
   background: #7a0070;
 }
+
+.lote-recente {
+  background: rgba(255, 114, 0, 0.08);
+  border-color: var(--cor-cta);
+}
+
+.jogo-item-recente {
+  background: rgba(255, 114, 0, 0.08);
+  border-radius: 8px;
+  border-top-color: transparent;
+  margin: 0 -0.5rem;
+  padding: 0.75rem 0.5rem;
+}
+
+.lote-recente-aviso {
+  margin: 0 0 0.75rem;
+  color: var(--cor-cta);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}

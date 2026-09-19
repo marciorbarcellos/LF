@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Paginacao from "@/app/components/Paginacao";
+import { valorTotal, formatarMoeda } from "@/lib/precos";
 
 function Dezena({ numero, estado }) {
   const classe =
@@ -134,12 +135,19 @@ export default function GeradorJogo() {
         </p>
         {grupos.length === 0 && <p className="texto-secundario">Nenhum jogo gerado ainda.</p>}
 
-        {grupos.map((grupo) => (
-          <div key={grupo.chave} className="lote">
+        {grupos.map((grupo, indice) => (
+          <div
+            key={grupo.chave}
+            className={"lote" + (pagina === 1 && indice === 0 ? " lote-recente" : "")}
+          >
             <div className="lote-header">
               Concurso {grupo.concursoAlvo ?? "a confirmar"} · {formatarDataHora(grupo.criadoEm)} ·{" "}
-              {grupo.jogos.length} {grupo.jogos.length === 1 ? "jogo" : "jogos"}
+              {grupo.jogos.length} {grupo.jogos.length === 1 ? "jogo" : "jogos"} ·{" "}
+              {formatarMoeda(valorTotal(grupo.jogos))}
             </div>
+            {pagina === 1 && indice === 0 && (
+              <p className="lote-recente-aviso">Aguardando o próximo sorteio · os demais abaixo são histórico</p>
+            )}
 
             {grupo.jogos.map((jogo) => (
               <div key={jogo._id} className="jogo-item">
