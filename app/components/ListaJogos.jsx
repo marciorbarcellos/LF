@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import ConfirmModal from "@/app/components/ConfirmModal";
 import Paginacao from "@/app/components/Paginacao";
-import { valorTotal, formatarMoeda } from "@/lib/precos";
+import { valorTotal, formatarMoeda, rotuloDezenas } from "@/lib/precos";
 
 function Dezena({ numero, estado }) {
   const classe =
@@ -204,7 +204,8 @@ export default function ListaJogos() {
                   onChange={() => alternarGrupo(grupo)}
                 />
                 Concurso {grupo.concursoAlvo ?? "a confirmar"} · {grupo.jogos.length}{" "}
-                {grupo.jogos.length === 1 ? "jogo" : "jogos"} · {formatarMoeda(valorTotal(grupo.jogos))}
+                {grupo.jogos.length === 1 ? "jogo" : "jogos"} · {rotuloDezenas(grupo.jogos)} ·{" "}
+                {formatarMoeda(valorTotal(grupo.jogos))}
               </label>
 
               {grupo.jogos.map((jogo) => {
