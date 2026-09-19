@@ -1,1 +1,14 @@
 LF.txt
+
+# Node
+node_modules/
+
+# Next.js
+.next/
+out/
+next-env.d.ts
+
+# Variáveis de ambiente (credenciais - nunca versionar)
+.env
+.env.local
+.env*.local

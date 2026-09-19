@@ -1,0 +1,29 @@
+{
+  "name": "lf",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marciorbarcellos/LF.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/marciorbarcellos/LF/issues"
+  },
+  "homepage": "https://github.com/marciorbarcellos/LF#readme",
+  "description": "",
+  "dependencies": {
+    "mongodb": "^7.6.0",
+    "next": "^16.3.5",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  }
+}

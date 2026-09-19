@@ -1,0 +1,72 @@
+:root {
+  --cor-primaria: #930089;
+  --cor-secundaria: #0066b3;
+  --cor-fundo: #f4f4f6;
+  --cor-card: #ffffff;
+  --cor-borda: #d5d9df;
+  --cor-texto: #1f2a47;
+  --cor-texto-secundario: #4c556c;
+  --cor-cta: #ff7200;
+  --cor-acerto: #209869;
+  --cor-neutro: #a5aab5;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--cor-fundo);
+  color: var(--cor-texto);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+main {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.card {
+  background: var(--cor-card);
+  border: 1px solid var(--cor-borda);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+h1 {
+  color: var(--cor-primaria);
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.status-ok {
+  background: rgba(32, 152, 105, 0.12);
+  color: var(--cor-acerto);
+}
+
+.status-fail {
+  background: rgba(166, 19, 36, 0.12);
+  color: #a61324;
+}
+
+.dezena {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin: 4px;
+  border-radius: 50%;
+  background: var(--cor-primaria);
+  color: #fff;
+  font-weight: 600;
+}
