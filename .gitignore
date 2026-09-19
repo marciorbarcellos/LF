@@ -10,7 +10,8 @@ node_modules/
 out/
 next-env.d.ts
 
-# Variáveis de ambiente (credenciais - nunca versionar)
+# Variáveis de ambiente
 .env
 .env.local
 .env*.local
+.env.example
