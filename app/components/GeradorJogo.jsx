@@ -129,10 +129,6 @@ export default function GeradorJogo() {
 
       <div className="card">
         <h2>Histórico de jogos gerados</h2>
-        <p className="texto-secundario">
-          Todo jogo que você gerar fica salvo aqui, agrupado por lote, com a conferência de acertos
-          assim que o concurso correspondente for sorteado.
-        </p>
         {grupos.length === 0 && <p className="texto-secundario">Nenhum jogo gerado ainda.</p>}
 
         {grupos.map((grupo, indice) => (
