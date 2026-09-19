@@ -199,3 +199,84 @@ main {
   text-align: center;
   margin-top: 2rem;
 }
+
+.link-lista {
+  display: block;
+  text-align: center;
+  margin-top: 1.5rem;
+  color: var(--cor-secundaria);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.link-lista:hover {
+  text-decoration: underline;
+}
+
+.link-voltar {
+  display: inline-block;
+  color: var(--cor-secundaria);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  margin-bottom: 0.5rem;
+}
+
+.link-voltar:hover {
+  text-decoration: underline;
+}
+
+.campo-busca {
+  flex: 1;
+  min-width: 160px;
+  padding: 0.6rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid var(--cor-borda);
+  font-size: 1rem;
+}
+
+.botao-excluir {
+  background: var(--cor-erro);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.25rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.botao-excluir:disabled {
+  background: var(--cor-neutro);
+  cursor: not-allowed;
+}
+
+.botao-excluir:not(:disabled):hover {
+  background: #841019;
+}
+
+.linha-selecionar-todos {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  color: var(--cor-texto-secundario);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.lote-header-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.lote-selecionavel {
+  transition: box-shadow 0.15s;
+}
+
+.lote-selecionavel:has(input[type="checkbox"]:checked) {
+  box-shadow: 0 0 0 2px var(--cor-primaria) inset;
+}

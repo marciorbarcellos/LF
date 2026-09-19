@@ -44,6 +44,38 @@ export async function POST(request) {
   }
 }
 
+export async function DELETE(request) {
+  try {
+    const body = await request.json().catch(() => ({}));
+    const concursos = Array.isArray(body.concursos) ? body.concursos.map(Number) : [];
+    const incluirSemConcurso = Boolean(body.incluirSemConcurso);
+
+    if (concursos.length === 0 && !incluirSemConcurso) {
+      return NextResponse.json({ ok: false, error: "Nenhum concurso selecionado." }, { status: 400 });
+    }
+
+    const filtro = { $or: [] };
+    if (concursos.length > 0) filtro.$or.push({ concursoAlvo: { $in: concursos } });
+    if (incluirSemConcurso) filtro.$or.push({ concursoAlvo: null });
+
+    const db = await getDb();
+    const idsParaExcluir = await db
+      .collection("jogosGerados")
+      .find(filtro, { projection: { _id: 1 } })
+      .map((d) => d._id)
+      .toArray();
+
+    if (idsParaExcluir.length > 0) {
+      await db.collection("conferencias").deleteMany({ jogoId: { $in: idsParaExcluir } });
+    }
+    const { deletedCount } = await db.collection("jogosGerados").deleteMany(filtro);
+
+    return NextResponse.json({ ok: true, removidos: deletedCount });
+  } catch (error) {
+    return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
+  }
+}
+
 export async function GET(request) {
   try {
     const limit = Number(new URL(request.url).searchParams.get("limit")) || 20;

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import GeradorJogo from "@/app/components/GeradorJogo";
 
 export const dynamic = "force-dynamic";
@@ -12,6 +13,10 @@ export default function Home() {
 
       <main>
         <GeradorJogo />
+
+        <Link href="/lista" className="link-lista">
+          Ver, buscar e excluir todos os jogos gerados →
+        </Link>
 
         <p className="aviso">
           Este app oferece geração aleatória e conferência
