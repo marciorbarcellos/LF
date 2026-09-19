@@ -147,6 +147,22 @@ main {
   color: var(--cor-texto-secundario);
 }
 
+.jogo-item-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-weight: 400;
+}
+
+.jogo-item-selecionado {
+  background: rgba(147, 0, 137, 0.05);
+  border-radius: 8px;
+  margin: 0 -0.5rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
 .status-badge {
   display: inline-block;
   padding: 0.35rem 0.9rem;
@@ -271,14 +287,6 @@ main {
   align-items: center;
   gap: 0.5rem;
   cursor: pointer;
-}
-
-.lote-selecionavel {
-  transition: box-shadow 0.15s;
-}
-
-.lote-selecionavel:has(input[type="checkbox"]:checked) {
-  box-shadow: 0 0 0 2px var(--cor-primaria) inset;
 }
 
 .modal-fundo {

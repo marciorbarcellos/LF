@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import ConfirmModal from "@/app/components/ConfirmModal";
 
@@ -30,6 +30,14 @@ function agruparPorConcurso(jogos) {
     if (b.chave === CHAVE_SEM_CONCURSO) return 1;
     return b.concursoAlvo - a.concursoAlvo;
   });
+}
+
+function CheckboxGrupo({ checked, indeterminado, onChange }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (ref.current) ref.current.indeterminate = indeterminado;
+  }, [indeterminado]);
+  return <input ref={ref} type="checkbox" checked={checked} onChange={onChange} />;
 }
 
 export default function ListaJogos() {
@@ -70,14 +78,28 @@ export default function ListaJogos() {
     });
   }, [grupos, busca]);
 
-  const todosSelecionados =
-    gruposFiltrados.length > 0 && gruposFiltrados.every((g) => selecionados.has(g.chave));
+  const idsFiltrados = useMemo(
+    () => gruposFiltrados.flatMap((g) => g.jogos.map((j) => j._id)),
+    [gruposFiltrados]
+  );
 
-  function alternarSelecao(chave) {
+  const todosSelecionados = idsFiltrados.length > 0 && idsFiltrados.every((id) => selecionados.has(id));
+
+  function alternarJogo(id) {
     setSelecionados((atual) => {
       const novo = new Set(atual);
-      if (novo.has(chave)) novo.delete(chave);
-      else novo.add(chave);
+      if (novo.has(id)) novo.delete(id);
+      else novo.add(id);
+      return novo;
+    });
+  }
+
+  function alternarGrupo(grupo) {
+    const idsDoGrupo = grupo.jogos.map((j) => j._id);
+    const todosMarcados = idsDoGrupo.every((id) => selecionados.has(id));
+    setSelecionados((atual) => {
+      const novo = new Set(atual);
+      idsDoGrupo.forEach((id) => (todosMarcados ? novo.delete(id) : novo.add(id)));
       return novo;
     });
   }
@@ -86,30 +108,23 @@ export default function ListaJogos() {
     setSelecionados((atual) => {
       if (todosSelecionados) {
         const novo = new Set(atual);
-        gruposFiltrados.forEach((g) => novo.delete(g.chave));
+        idsFiltrados.forEach((id) => novo.delete(id));
         return novo;
       }
       const novo = new Set(atual);
-      gruposFiltrados.forEach((g) => novo.add(g.chave));
+      idsFiltrados.forEach((id) => novo.add(id));
       return novo;
     });
   }
 
-  const totalJogosSelecionados = grupos
-    .filter((g) => selecionados.has(g.chave))
-    .reduce((soma, g) => soma + g.jogos.length, 0);
-
   async function confirmarExclusao() {
-    const concursos = Array.from(selecionados).filter((c) => c !== CHAVE_SEM_CONCURSO);
-    const incluirSemConcurso = selecionados.has(CHAVE_SEM_CONCURSO);
-
     setExcluindo(true);
     setErro(null);
     try {
       const res = await fetch("/api/jogos", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ concursos, incluirSemConcurso }),
+        body: JSON.stringify({ ids: Array.from(selecionados) }),
       });
       const data = await res.json();
       if (!data.ok) throw new Error(data.error);
@@ -152,7 +167,7 @@ export default function ListaJogos() {
         {gruposFiltrados.length > 0 && (
           <label className="linha-selecionar-todos">
             <input type="checkbox" checked={todosSelecionados} onChange={alternarSelecionarTodos} />
-            Selecionar todos os concursos listados
+            Selecionar todos os jogos listados
           </label>
         )}
       </div>
@@ -163,59 +178,72 @@ export default function ListaJogos() {
           <p className="texto-secundario">Nenhum concurso encontrado.</p>
         )}
 
-        {gruposFiltrados.map((grupo) => (
-          <div key={grupo.chave} className="lote lote-selecionavel">
-            <label className="lote-header lote-header-checkbox">
-              <input
-                type="checkbox"
-                checked={selecionados.has(grupo.chave)}
-                onChange={() => alternarSelecao(grupo.chave)}
-              />
-              Concurso {grupo.concursoAlvo ?? "a confirmar"} · {grupo.jogos.length}{" "}
-              {grupo.jogos.length === 1 ? "jogo" : "jogos"}
-            </label>
+        {gruposFiltrados.map((grupo) => {
+          const idsDoGrupo = grupo.jogos.map((j) => j._id);
+          const todosDoGrupo = idsDoGrupo.every((id) => selecionados.has(id));
+          const algunsDoGrupo = !todosDoGrupo && idsDoGrupo.some((id) => selecionados.has(id));
 
-            {grupo.jogos.map((jogo) => (
-              <div key={jogo._id} className="jogo-item">
-                <div className="jogo-item-header">
-                  <span className="texto-secundario">{formatarDataHora(jogo.criadoEm)}</span>
-                  {jogo.conferencia ? (
-                    <span
-                      className={
-                        "status-badge " + (jogo.conferencia.acertos >= 11 ? "status-ok" : "status-fail")
-                      }
-                    >
-                      {jogo.conferencia.acertos} acertos / {jogo.conferencia.erros} erros
-                    </span>
-                  ) : (
-                    <span className="status-badge status-pendente">Aguardando sorteio</span>
-                  )}
+          return (
+            <div key={grupo.chave} className="lote">
+              <label className="lote-header lote-header-checkbox">
+                <CheckboxGrupo
+                  checked={todosDoGrupo}
+                  indeterminado={algunsDoGrupo}
+                  onChange={() => alternarGrupo(grupo)}
+                />
+                Concurso {grupo.concursoAlvo ?? "a confirmar"} · {grupo.jogos.length}{" "}
+                {grupo.jogos.length === 1 ? "jogo" : "jogos"}
+              </label>
+
+              {grupo.jogos.map((jogo) => (
+                <div key={jogo._id} className={"jogo-item" + (selecionados.has(jogo._id) ? " jogo-item-selecionado" : "")}>
+                  <div className="jogo-item-header">
+                    <label className="jogo-item-checkbox">
+                      <input
+                        type="checkbox"
+                        checked={selecionados.has(jogo._id)}
+                        onChange={() => alternarJogo(jogo._id)}
+                      />
+                      <span className="texto-secundario">{formatarDataHora(jogo.criadoEm)}</span>
+                    </label>
+                    {jogo.conferencia ? (
+                      <span
+                        className={
+                          "status-badge " + (jogo.conferencia.acertos >= 11 ? "status-ok" : "status-fail")
+                        }
+                      >
+                        {jogo.conferencia.acertos} acertos / {jogo.conferencia.erros} erros
+                      </span>
+                    ) : (
+                      <span className="status-badge status-pendente">Aguardando sorteio</span>
+                    )}
+                  </div>
+                  <div>
+                    {jogo.dezenas.map((d) => (
+                      <Dezena
+                        key={d}
+                        numero={d}
+                        estado={
+                          jogo.conferencia
+                            ? jogo.conferencia.dezenasAcertadas.includes(d)
+                              ? "acerto"
+                              : "erro"
+                            : null
+                        }
+                      />
+                    ))}
+                  </div>
                 </div>
-                <div>
-                  {jogo.dezenas.map((d) => (
-                    <Dezena
-                      key={d}
-                      numero={d}
-                      estado={
-                        jogo.conferencia
-                          ? jogo.conferencia.dezenasAcertadas.includes(d)
-                            ? "acerto"
-                            : "erro"
-                          : null
-                      }
-                    />
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        ))}
+              ))}
+            </div>
+          );
+        })}
       </div>
 
       <ConfirmModal
         aberto={modalAberto}
         titulo="Excluir jogos"
-        mensagem={`Excluir ${selecionados.size} concurso(s), totalizando ${totalJogosSelecionados} jogo(s)? Essa ação não pode ser desfeita.`}
+        mensagem={`Excluir ${selecionados.size} jogo(s) selecionado(s)? Essa ação não pode ser desfeita.`}
         carregando={excluindo}
         onConfirmar={confirmarExclusao}
         onCancelar={() => setModalAberto(false)}

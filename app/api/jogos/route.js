@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { ObjectId } from "mongodb";
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/mongodb";
 import { gerarDezenas } from "@/lib/gerarJogo";
@@ -47,28 +48,22 @@ export async function POST(request) {
 export async function DELETE(request) {
   try {
     const body = await request.json().catch(() => ({}));
-    const concursos = Array.isArray(body.concursos) ? body.concursos.map(Number) : [];
-    const incluirSemConcurso = Boolean(body.incluirSemConcurso);
+    const idsBrutos = Array.isArray(body.ids) ? body.ids : [];
 
-    if (concursos.length === 0 && !incluirSemConcurso) {
-      return NextResponse.json({ ok: false, error: "Nenhum concurso selecionado." }, { status: 400 });
+    let ids;
+    try {
+      ids = idsBrutos.map((id) => new ObjectId(id));
+    } catch {
+      return NextResponse.json({ ok: false, error: "ID de jogo inválido." }, { status: 400 });
     }
 
-    const filtro = { $or: [] };
-    if (concursos.length > 0) filtro.$or.push({ concursoAlvo: { $in: concursos } });
-    if (incluirSemConcurso) filtro.$or.push({ concursoAlvo: null });
+    if (ids.length === 0) {
+      return NextResponse.json({ ok: false, error: "Nenhum jogo selecionado." }, { status: 400 });
+    }
 
     const db = await getDb();
-    const idsParaExcluir = await db
-      .collection("jogosGerados")
-      .find(filtro, { projection: { _id: 1 } })
-      .map((d) => d._id)
-      .toArray();
-
-    if (idsParaExcluir.length > 0) {
-      await db.collection("conferencias").deleteMany({ jogoId: { $in: idsParaExcluir } });
-    }
-    const { deletedCount } = await db.collection("jogosGerados").deleteMany(filtro);
+    await db.collection("conferencias").deleteMany({ jogoId: { $in: ids } });
+    const { deletedCount } = await db.collection("jogosGerados").deleteMany({ _id: { $in: ids } });
 
     return NextResponse.json({ ok: true, removidos: deletedCount });
   } catch (error) {
