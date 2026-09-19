@@ -76,13 +76,33 @@ export async function GET(request) {
     const params = new URL(request.url).searchParams;
     const pageSize = Math.min(Math.max(Number(params.get("pageSize")) || 100, 1), 100);
     const page = Math.max(Number(params.get("page")) || 1, 1);
+    const busca = (params.get("q") ?? "").trim().toLowerCase();
 
     const db = await getDb();
-    const total = await db.collection("jogosGerados").countDocuments({});
+
+    // Busca por concurso em todo o banco: como concursoAlvo é numérico,
+    // comparamos a busca contra os números distintos já existentes (poucos
+    // valores diferentes na prática) em vez de tentar um regex sobre número.
+    let filtro = {};
+    if (busca) {
+      const distintos = await db.collection("jogosGerados").distinct("concursoAlvo");
+      const numerosCorrespondentes = distintos.filter(
+        (c) => c !== null && String(c).includes(busca)
+      );
+      const semConcursoCorresponde = "a confirmar".includes(busca) && distintos.includes(null);
+
+      const ors = [];
+      if (numerosCorrespondentes.length > 0) ors.push({ concursoAlvo: { $in: numerosCorrespondentes } });
+      if (semConcursoCorresponde) ors.push({ concursoAlvo: null });
+
+      filtro = ors.length > 0 ? { $or: ors } : { _id: null };
+    }
+
+    const total = await db.collection("jogosGerados").countDocuments(filtro);
     const totalPaginas = Math.max(Math.ceil(total / pageSize), 1);
     const jogos = await db
       .collection("jogosGerados")
-      .find({})
+      .find(filtro)
       .sort({ criadoEm: -1 })
       .skip((page - 1) * pageSize)
       .limit(pageSize)

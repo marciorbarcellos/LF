@@ -47,15 +47,27 @@ export default function ListaJogos() {
   const [excluindo, setExcluindo] = useState(false);
   const [erro, setErro] = useState(null);
   const [busca, setBusca] = useState("");
+  const [buscaAtiva, setBuscaAtiva] = useState("");
   const [selecionados, setSelecionados] = useState(new Set());
   const [modalAberto, setModalAberto] = useState(false);
   const [pagina, setPagina] = useState(1);
   const [paginacao, setPaginacao] = useState(null);
 
-  async function carregar(paginaAlvo = pagina) {
+  // Debounce: espera parar de digitar antes de buscar em todo o banco.
+  useEffect(() => {
+    const t = setTimeout(() => setBuscaAtiva(busca.trim()), 350);
+    return () => clearTimeout(t);
+  }, [busca]);
+
+  async function carregar(paginaAlvo, termo) {
     setCarregando(true);
     try {
-      const res = await fetch(`/api/jogos?page=${paginaAlvo}&pageSize=100`);
+      const url = new URL("/api/jogos", window.location.origin);
+      url.searchParams.set("page", paginaAlvo);
+      url.searchParams.set("pageSize", "100");
+      if (termo) url.searchParams.set("q", termo);
+
+      const res = await fetch(url);
       const data = await res.json();
       if (!data.ok) throw new Error(data.error);
       setJogos(data.jogos);
@@ -68,27 +80,15 @@ export default function ListaJogos() {
     }
   }
 
+  // Toda vez que a busca (já debounced) muda, volta para a página 1 e
+  // refaz a consulta no banco inteiro — não só na página carregada.
   useEffect(() => {
-    carregar(1);
-  }, []);
+    carregar(1, buscaAtiva);
+  }, [buscaAtiva]);
 
   const grupos = useMemo(() => agruparPorConcurso(jogos), [jogos]);
-
-  const gruposFiltrados = useMemo(() => {
-    const termo = busca.trim().toLowerCase();
-    if (!termo) return grupos;
-    return grupos.filter((g) => {
-      const texto = g.chave === CHAVE_SEM_CONCURSO ? "a confirmar" : String(g.concursoAlvo);
-      return texto.toLowerCase().includes(termo);
-    });
-  }, [grupos, busca]);
-
-  const idsFiltrados = useMemo(
-    () => gruposFiltrados.flatMap((g) => g.jogos.map((j) => j._id)),
-    [gruposFiltrados]
-  );
-
-  const todosSelecionados = idsFiltrados.length > 0 && idsFiltrados.every((id) => selecionados.has(id));
+  const idsListados = useMemo(() => jogos.map((j) => j._id), [jogos]);
+  const todosSelecionados = idsListados.length > 0 && idsListados.every((id) => selecionados.has(id));
 
   function alternarJogo(id) {
     setSelecionados((atual) => {
@@ -113,11 +113,11 @@ export default function ListaJogos() {
     setSelecionados((atual) => {
       if (todosSelecionados) {
         const novo = new Set(atual);
-        idsFiltrados.forEach((id) => novo.delete(id));
+        idsListados.forEach((id) => novo.delete(id));
         return novo;
       }
       const novo = new Set(atual);
-      idsFiltrados.forEach((id) => novo.add(id));
+      idsListados.forEach((id) => novo.add(id));
       return novo;
     });
   }
@@ -135,7 +135,7 @@ export default function ListaJogos() {
       if (!data.ok) throw new Error(data.error);
       setSelecionados(new Set());
       setModalAberto(false);
-      await carregar();
+      await carregar(pagina, buscaAtiva);
     } catch (e) {
       setErro(e.message);
     } finally {
@@ -168,9 +168,13 @@ export default function ListaJogos() {
         </div>
 
         {erro && <p className="mensagem-erro">{erro}</p>}
-        <p className="texto-secundario">A busca filtra apenas os jogos da página atual.</p>
+        {buscaAtiva && (
+          <p className="texto-secundario">
+            Buscando “{buscaAtiva}” em todos os concursos já gerados, não só nesta página.
+          </p>
+        )}
 
-        {gruposFiltrados.length > 0 && (
+        {grupos.length > 0 && (
           <label className="linha-selecionar-todos">
             <input type="checkbox" checked={todosSelecionados} onChange={alternarSelecionarTodos} />
             Selecionar todos os jogos listados
@@ -180,11 +184,11 @@ export default function ListaJogos() {
 
       <div className="card">
         {carregando && <p className="texto-secundario">Carregando...</p>}
-        {!carregando && gruposFiltrados.length === 0 && (
+        {!carregando && grupos.length === 0 && (
           <p className="texto-secundario">Nenhum concurso encontrado.</p>
         )}
 
-        {gruposFiltrados.map((grupo) => {
+        {grupos.map((grupo) => {
           const idsDoGrupo = grupo.jogos.map((j) => j._id);
           const todosDoGrupo = idsDoGrupo.every((id) => selecionados.has(id));
           const algunsDoGrupo = !todosDoGrupo && idsDoGrupo.some((id) => selecionados.has(id));
@@ -245,7 +249,7 @@ export default function ListaJogos() {
           );
         })}
 
-        <Paginacao paginacao={paginacao} onMudarPagina={carregar} />
+        <Paginacao paginacao={paginacao} onMudarPagina={(p) => carregar(p, buscaAtiva)} />
       </div>
 
       <ConfirmModal
