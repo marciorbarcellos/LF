@@ -12,12 +12,22 @@ export async function POST(request) {
       return NextResponse.json({ ok: false, error: "Quantidade deve ser entre 15 e 20." }, { status: 400 });
     }
 
-    const ultimo = await buscarUltimoConcurso();
+    // A geração do jogo não depende dos dados de concurso — só a conferência
+    // posterior depende. Se a fonte de resultados estiver indisponível, o
+    // jogo ainda é gerado e salvo, só fica marcado como "concurso a confirmar".
+    let concursoAlvo = null;
+    try {
+      const ultimo = await buscarUltimoConcurso();
+      concursoAlvo = ultimo.numeroConcursoProximo;
+    } catch {
+      concursoAlvo = null;
+    }
+
     const dezenas = gerarDezenas(quantidade);
 
     const db = await getDb();
     const doc = {
-      concursoAlvo: ultimo.numeroConcursoProximo,
+      concursoAlvo,
       dezenas,
       criadoEm: new Date(),
     };
@@ -41,12 +51,27 @@ export async function GET(request) {
       .limit(limit)
       .toArray();
 
-    const ultimo = await buscarUltimoConcurso();
+    let ultimo = null;
+    try {
+      ultimo = await buscarUltimoConcurso();
+    } catch {
+      ultimo = null;
+    }
+
+    if (!ultimo) {
+      return NextResponse.json({
+        ok: true,
+        ultimoConcurso: null,
+        avisoFonteDados: "Fonte de resultados indisponível no momento — conferência temporariamente desativada.",
+        jogos: jogos.map((jogo) => ({ ...jogo, conferencia: null })),
+      });
+    }
+
     const cacheConcursos = new Map([[ultimo.numero, ultimo]]);
 
     const jogosComConferencia = await Promise.all(
       jogos.map(async (jogo) => {
-        const jaSorteado = jogo.concursoAlvo <= ultimo.numero;
+        const jaSorteado = jogo.concursoAlvo && jogo.concursoAlvo <= ultimo.numero;
         if (!jaSorteado) {
           return { ...jogo, conferencia: null };
         }
@@ -58,8 +83,12 @@ export async function GET(request) {
 
         let sorteio = cacheConcursos.get(jogo.concursoAlvo);
         if (!sorteio) {
-          sorteio = await buscarConcurso(jogo.concursoAlvo);
-          cacheConcursos.set(jogo.concursoAlvo, sorteio);
+          try {
+            sorteio = await buscarConcurso(jogo.concursoAlvo);
+            cacheConcursos.set(jogo.concursoAlvo, sorteio);
+          } catch {
+            return { ...jogo, conferencia: null };
+          }
         }
 
         const dezenasAcertadas = jogo.dezenas.filter((d) => sorteio.dezenas.includes(d));

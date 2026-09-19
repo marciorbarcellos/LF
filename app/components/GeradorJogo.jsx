@@ -12,6 +12,7 @@ export default function GeradorJogo() {
   const [quantidade, setQuantidade] = useState(15);
   const [jogos, setJogos] = useState([]);
   const [ultimoConcurso, setUltimoConcurso] = useState(null);
+  const [avisoFonteDados, setAvisoFonteDados] = useState(null);
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState(null);
 
@@ -22,6 +23,7 @@ export default function GeradorJogo() {
       if (!data.ok) throw new Error(data.error);
       setJogos(data.jogos);
       setUltimoConcurso(data.ultimoConcurso);
+      setAvisoFonteDados(data.avisoFonteDados ?? null);
     } catch (e) {
       setErro(e.message);
     }
@@ -80,6 +82,7 @@ export default function GeradorJogo() {
         </div>
 
         {erro && <p className="mensagem-erro">{erro}</p>}
+        {avisoFonteDados && <p className="mensagem-erro">{avisoFonteDados}</p>}
       </div>
 
       <div className="card">
@@ -89,7 +92,7 @@ export default function GeradorJogo() {
         {jogos.map((jogo) => (
           <div key={jogo._id} className="jogo-item">
             <div className="jogo-item-header">
-              <span>Concurso {jogo.concursoAlvo}</span>
+              <span>Concurso {jogo.concursoAlvo ?? "a confirmar"}</span>
               {jogo.conferencia ? (
                 <span
                   className={
