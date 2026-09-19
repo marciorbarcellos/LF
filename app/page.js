@@ -14,13 +14,9 @@ export default function Home() {
       <main>
         <GeradorJogo />
 
-        <Link href="/lista" className="link-lista">
-          Ver, buscar e excluir todos os jogos gerados →
-        </Link>
-
         <p className="aviso">
-          Este app oferece geração aleatória e conferência
-          de resultados como ferramenta de organização de jogos, não como previsão de resultado.
+          App de geração aleatória e conferência
+          de resultados de jogos.
         </p>
       </main>
     </>

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import ConfirmModal from "@/app/components/ConfirmModal";
 
 function Dezena({ numero, estado }) {
   const classe =
@@ -38,6 +39,7 @@ export default function ListaJogos() {
   const [erro, setErro] = useState(null);
   const [busca, setBusca] = useState("");
   const [selecionados, setSelecionados] = useState(new Set());
+  const [modalAberto, setModalAberto] = useState(false);
 
   async function carregar() {
     setCarregando(true);
@@ -93,18 +95,13 @@ export default function ListaJogos() {
     });
   }
 
-  async function excluirSelecionados() {
-    if (selecionados.size === 0) return;
+  const totalJogosSelecionados = grupos
+    .filter((g) => selecionados.has(g.chave))
+    .reduce((soma, g) => soma + g.jogos.length, 0);
+
+  async function confirmarExclusao() {
     const concursos = Array.from(selecionados).filter((c) => c !== CHAVE_SEM_CONCURSO);
     const incluirSemConcurso = selecionados.has(CHAVE_SEM_CONCURSO);
-
-    const totalJogos = grupos
-      .filter((g) => selecionados.has(g.chave))
-      .reduce((soma, g) => soma + g.jogos.length, 0);
-
-    if (!confirm(`Excluir ${selecionados.size} concurso(s), totalizando ${totalJogos} jogo(s)? Essa ação não pode ser desfeita.`)) {
-      return;
-    }
 
     setExcluindo(true);
     setErro(null);
@@ -117,6 +114,7 @@ export default function ListaJogos() {
       const data = await res.json();
       if (!data.ok) throw new Error(data.error);
       setSelecionados(new Set());
+      setModalAberto(false);
       await carregar();
     } catch (e) {
       setErro(e.message);
@@ -140,7 +138,11 @@ export default function ListaJogos() {
             onChange={(e) => setBusca(e.target.value)}
             className="campo-busca"
           />
-          <button onClick={excluirSelecionados} disabled={excluindo || selecionados.size === 0} className="botao-excluir">
+          <button
+            onClick={() => setModalAberto(true)}
+            disabled={excluindo || selecionados.size === 0}
+            className="botao-excluir"
+          >
             {excluindo ? "Excluindo..." : `Excluir selecionados (${selecionados.size})`}
           </button>
         </div>
@@ -209,6 +211,15 @@ export default function ListaJogos() {
           </div>
         ))}
       </div>
+
+      <ConfirmModal
+        aberto={modalAberto}
+        titulo="Excluir jogos"
+        mensagem={`Excluir ${selecionados.size} concurso(s), totalizando ${totalJogosSelecionados} jogo(s)? Essa ação não pode ser desfeita.`}
+        carregando={excluindo}
+        onConfirmar={confirmarExclusao}
+        onCancelar={() => setModalAberto(false)}
+      />
     </>
   );
 }
