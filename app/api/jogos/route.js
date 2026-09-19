@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/mongodb";
 import { gerarDezenas } from "@/lib/gerarJogo";
@@ -7,9 +8,10 @@ export async function POST(request) {
   try {
     const body = await request.json().catch(() => ({}));
     const quantidade = Number(body.quantidade) || 15;
+    const quantidadeJogos = Math.min(Math.max(Number(body.quantidadeJogos) || 1, 1), 10);
 
     if (quantidade < 15 || quantidade > 20) {
-      return NextResponse.json({ ok: false, error: "Quantidade deve ser entre 15 e 20." }, { status: 400 });
+      return NextResponse.json({ ok: false, error: "Quantidade de dezenas deve ser entre 15 e 20." }, { status: 400 });
     }
 
     // A geração do jogo não depende dos dados de concurso — só a conferência
@@ -23,17 +25,20 @@ export async function POST(request) {
       concursoAlvo = null;
     }
 
-    const dezenas = gerarDezenas(quantidade);
+    const loteId = randomUUID();
+    const criadoEm = new Date();
+    const docs = Array.from({ length: quantidadeJogos }, () => ({
+      concursoAlvo,
+      dezenas: gerarDezenas(quantidade),
+      loteId,
+      criadoEm,
+    }));
 
     const db = await getDb();
-    const doc = {
-      concursoAlvo,
-      dezenas,
-      criadoEm: new Date(),
-    };
-    const { insertedId } = await db.collection("jogosGerados").insertOne(doc);
+    const { insertedIds } = await db.collection("jogosGerados").insertMany(docs);
+    const jogos = docs.map((doc, i) => ({ _id: insertedIds[i], ...doc }));
 
-    return NextResponse.json({ ok: true, jogo: { _id: insertedId, ...doc } });
+    return NextResponse.json({ ok: true, jogos });
   } catch (error) {
     return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
   }
