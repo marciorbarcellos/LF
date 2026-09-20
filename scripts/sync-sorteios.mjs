@@ -33,9 +33,21 @@ function normalizar(resultado) {
 
 async function buscarConcurso(numero) {
   const url = numero ? `${BASE_URL}/${numero}` : BASE_URL;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`API da Caixa retornou ${res.status} para o concurso ${numero ?? "(último)"}`);
-  return normalizar(await res.json());
+  let ultimoErro;
+  for (let tentativa = 1; tentativa <= 4; tentativa++) {
+    try {
+      const res = await fetch(url, {
+        headers: { "User-Agent": "Mozilla/5.0", Accept: "application/json" },
+        signal: AbortSignal.timeout(20000),
+      });
+      if (!res.ok) throw new Error(`API da Caixa retornou ${res.status} para o concurso ${numero ?? "(último)"}`);
+      return normalizar(await res.json());
+    } catch (error) {
+      ultimoErro = error;
+      await new Promise((r) => setTimeout(r, tentativa * 2000));
+    }
+  }
+  throw ultimoErro;
 }
 
 async function carregarExistentes() {
