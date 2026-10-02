@@ -105,6 +105,7 @@ export default function GeradorJogo() {
         )}
 
         <div className="controles">
+          <div className="campos-grade">
           <label htmlFor="quantidade">Dezenas por jogo</label>
           <select
             id="quantidade"
@@ -131,6 +132,7 @@ export default function GeradorJogo() {
             }}
             className="campo-numero"
           />
+          </div>
 
           <button onClick={() => gerarJogos()} disabled={carregando}>
             {carregando ? "Gerando..." : "Gerar"}

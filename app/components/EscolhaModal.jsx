@@ -62,6 +62,7 @@ export default function EscolhaModal({ aberto, carregando, onGerar, onCancelar }
         <h3>Escolha os números que deseja</h3>
 
         <div className="controles escolha-controles">
+          <div className="campos-grade">
           <label htmlFor="escolha-quantidade">Dezenas por jogo</label>
           <select
             id="escolha-quantidade"
@@ -87,6 +88,7 @@ export default function EscolhaModal({ aberto, carregando, onGerar, onCancelar }
               </option>
             ))}
           </select>
+          </div>
         </div>
 
         <div className="escolha-lista">
