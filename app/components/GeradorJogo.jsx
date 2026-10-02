@@ -106,7 +106,7 @@ export default function GeradorJogo() {
   return (
     <>
       <div className="card">
-        <h2>Gerar jogos</h2>
+        {/* <h2>Gerar jogos</h2> */}
         {ultimoConcurso && (
           <p className="texto-secundario">
             Próximo concurso: <strong>{ultimoConcurso.numeroConcursoProximo}</strong> em{" "}
