@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Paginacao from "@/app/components/Paginacao";
+import EscolhaModal from "@/app/components/EscolhaModal";
+import AvisoModal from "@/app/components/AvisoModal";
 import { valorTotal, formatarMoeda, rotuloDezenas } from "@/lib/precos";
 
 function Dezena({ numero, estado }) {
@@ -38,6 +40,8 @@ export default function GeradorJogo() {
   const [erro, setErro] = useState(null);
   const [pagina, setPagina] = useState(1);
   const [paginacao, setPaginacao] = useState(null);
+  const [escolhaAberta, setEscolhaAberta] = useState(false);
+  const [avisoVisto, setAvisoVisto] = useState(false);
 
   async function carregarJogos(paginaAlvo = pagina) {
     try {
@@ -58,22 +62,32 @@ export default function GeradorJogo() {
     carregarJogos(1);
   }, []);
 
-  async function gerarJogos() {
+  async function gerarJogos(corpo = { quantidade, quantidadeJogos }) {
     setCarregando(true);
     setErro(null);
     try {
       const res = await fetch("/api/jogos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ quantidade, quantidadeJogos }),
+        body: JSON.stringify(corpo),
       });
       const data = await res.json();
       if (!data.ok) throw new Error(data.error);
       await carregarJogos(1);
+      return true;
     } catch (e) {
       setErro(e.message);
+      return false;
     } finally {
       setCarregando(false);
+    }
+  }
+
+  async function gerarJogosEscolhidos(selecoes, dezenasPorJogo) {
+    const ok = await gerarJogos({ quantidade: dezenasPorJogo, jogosManuais: selecoes });
+    if (ok) {
+      setEscolhaAberta(false);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   }
 
@@ -118,14 +132,31 @@ export default function GeradorJogo() {
             className="campo-numero"
           />
 
-          <button onClick={gerarJogos} disabled={carregando}>
+          <button onClick={() => gerarJogos()} disabled={carregando}>
             {carregando ? "Gerando..." : "Gerar"}
           </button>
-        </div>
 
-        {erro && <p className="mensagem-erro">{erro}</p>}
-        {avisoFonteDados && <p className="mensagem-erro">{avisoFonteDados}</p>}
+          <button className="botao-escolha" onClick={() => setEscolhaAberta(true)} disabled={carregando}>
+            Escolha
+          </button>
+        </div>
       </div>
+
+      {escolhaAberta && (
+        <EscolhaModal
+          aberto
+          carregando={carregando}
+          onGerar={gerarJogosEscolhidos}
+          onCancelar={() => setEscolhaAberta(false)}
+        />
+      )}
+
+      <AvisoModal
+        aberto={Boolean(erro) || (avisoFonteDados && !avisoVisto)}
+        titulo={erro ? "Erro" : "Aviso"}
+        mensagem={erro || avisoFonteDados}
+        onFechar={() => (erro ? setErro(null) : setAvisoVisto(true))}
+      />
 
       <div className="card">
         <h2>Histórico de jogos gerados</h2>

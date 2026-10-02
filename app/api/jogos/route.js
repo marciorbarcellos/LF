@@ -15,6 +15,26 @@ export async function POST(request) {
       return NextResponse.json({ ok: false, error: "Quantidade de dezenas deve ser entre 15 e 20." }, { status: 400 });
     }
 
+    const manuais = Array.isArray(body.jogosManuais) ? body.jogosManuais : null;
+    if (manuais) {
+      const valido =
+        manuais.length >= 1 &&
+        manuais.length <= 100 &&
+        manuais.every(
+          (jogo) =>
+            Array.isArray(jogo) &&
+            jogo.length === quantidade &&
+            new Set(jogo).size === quantidade &&
+            jogo.every((d) => Number.isInteger(d) && d >= 1 && d <= 25)
+        );
+      if (!valido) {
+        return NextResponse.json(
+          { ok: false, error: `Cada jogo deve ter exatamente ${quantidade} dezenas distintas entre 01 e 25.` },
+          { status: 400 }
+        );
+      }
+    }
+
     // A geração do jogo não depende dos dados de concurso — só a conferência
     // posterior depende. Se a fonte de resultados estiver indisponível, o
     // jogo ainda é gerado e salvo, só fica marcado como "concurso a confirmar".
@@ -28,9 +48,9 @@ export async function POST(request) {
 
     const loteId = randomUUID();
     const criadoEm = new Date();
-    const docs = Array.from({ length: quantidadeJogos }, () => ({
+    const docs = Array.from({ length: manuais ? manuais.length : quantidadeJogos }, (_, i) => ({
       concursoAlvo,
-      dezenas: gerarDezenas(quantidade),
+      dezenas: manuais ? [...manuais[i]].sort((a, b) => a - b) : gerarDezenas(quantidade),
       loteId,
       criadoEm,
     }));

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import ConfirmModal from "@/app/components/ConfirmModal";
 import Paginacao from "@/app/components/Paginacao";
+import AvisoModal from "@/app/components/AvisoModal";
 import { valorTotal, formatarMoeda, rotuloDezenas } from "@/lib/precos";
 
 function Dezena({ numero, estado }) {
@@ -169,7 +170,7 @@ export default function ListaJogos() {
           </button>
         </div>
 
-        {erro && <p className="mensagem-erro">{erro}</p>}
+        <AvisoModal aberto={Boolean(erro)} titulo="Erro" mensagem={erro} onFechar={() => setErro(null)} />
         {buscaAtiva && (
           <p className="texto-secundario">
             Buscando “{buscaAtiva}” em todos os concursos já gerados, não só nesta página.

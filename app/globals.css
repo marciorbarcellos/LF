@@ -111,6 +111,107 @@ main {
   background: #7a0070;
 }
 
+.controles button.botao-escolha {
+  background: #0066b3;
+}
+
+.controles button.botao-escolha:not(:disabled):hover {
+  background: #004f8a;
+}
+
+.controles button.botao-escolha:disabled {
+  background: var(--cor-neutro);
+}
+
+.modal-caixa-escolha {
+  max-width: 560px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.escolha-controles {
+  margin-top: 0;
+}
+
+.escolha-lista {
+  overflow-y: auto;
+  margin-top: 1rem;
+  padding-right: 0.25rem;
+}
+
+.escolha-jogo {
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid var(--cor-borda);
+  border-radius: 10px;
+  background: var(--cor-fundo);
+}
+
+.escolha-jogo-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--cor-texto-secundario);
+  margin-bottom: 0.5rem;
+}
+
+.escolha-contador-ok {
+  color: var(--cor-acerto);
+}
+
+.escolha-grade {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.4rem;
+}
+
+.escolha-dezena {
+  padding: 0.5rem 0;
+  border-radius: 8px;
+  border: 1px solid var(--cor-borda);
+  background: #fff;
+  color: var(--cor-texto);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.escolha-dezena:hover:not(:disabled) {
+  border-color: var(--cor-primaria);
+}
+
+.escolha-dezena-ativa,
+.escolha-dezena-ativa:hover:not(:disabled) {
+  background: var(--cor-primaria);
+  border-color: var(--cor-primaria);
+  color: #fff;
+}
+
+.modal-fundo-aviso {
+  z-index: 200;
+}
+
+.modal-botao-ok {
+  background: var(--cor-primaria);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.25rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.modal-botao-ok:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.modal-botao-ok:not(:disabled):hover {
+  background: #7a0070;
+}
+
 .mensagem-erro {
   color: var(--cor-erro);
   font-size: 0.9rem;
