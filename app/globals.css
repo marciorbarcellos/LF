@@ -132,6 +132,18 @@ main {
   background: var(--cor-neutro);
 }
 
+.controles button.botao-quinzena {
+  background: #209869;
+}
+
+.controles button.botao-quinzena:not(:disabled):hover {
+  background: #17734f;
+}
+
+.controles button.botao-quinzena:disabled {
+  background: var(--cor-neutro);
+}
+
 .modal-caixa-escolha {
   max-width: 560px;
   max-height: 90vh;

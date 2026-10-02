@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Paginacao from "@/app/components/Paginacao";
 import EscolhaModal from "@/app/components/EscolhaModal";
+import QuinzenaModal from "@/app/components/QuinzenaModal";
 import AvisoModal from "@/app/components/AvisoModal";
 import { valorTotal, formatarMoeda, rotuloDezenas } from "@/lib/precos";
 
@@ -41,6 +42,7 @@ export default function GeradorJogo() {
   const [pagina, setPagina] = useState(1);
   const [paginacao, setPaginacao] = useState(null);
   const [escolhaAberta, setEscolhaAberta] = useState(false);
+  const [quinzenaAberta, setQuinzenaAberta] = useState(false);
   const [avisoVisto, setAvisoVisto] = useState(false);
 
   async function carregarJogos(paginaAlvo = pagina) {
@@ -80,6 +82,14 @@ export default function GeradorJogo() {
       return false;
     } finally {
       setCarregando(false);
+    }
+  }
+
+  async function gerarJogosQuinzena(quantidadeJogosQuinzena) {
+    const ok = await gerarJogos({ estrategia: "quinzena", quantidadeJogos: quantidadeJogosQuinzena });
+    if (ok) {
+      setQuinzenaAberta(false);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   }
 
@@ -141,8 +151,20 @@ export default function GeradorJogo() {
           <button className="botao-escolha" onClick={() => setEscolhaAberta(true)} disabled={carregando}>
             Escolha
           </button>
+
+          <button className="botao-quinzena" onClick={() => setQuinzenaAberta(true)} disabled={carregando}>
+            QUINZENA
+          </button>
         </div>
       </div>
+
+      {quinzenaAberta && (
+        <QuinzenaModal
+          carregando={carregando}
+          onGerar={gerarJogosQuinzena}
+          onCancelar={() => setQuinzenaAberta(false)}
+        />
+      )}
 
       {escolhaAberta && (
         <EscolhaModal
