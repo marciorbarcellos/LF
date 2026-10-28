@@ -16,11 +16,20 @@ export async function POST(request) {
     }
 
     const quinzena = body.estrategia === "quinzena";
-    const manuais = quinzena
-      ? gerarJogosQuinzena(quantidadeJogos)
-      : Array.isArray(body.jogosManuais)
+    let manuais;
+    if (quinzena) {
+      // Não repete sequências de 15 dezenas que já foram geradas antes.
+      const existentes = await (await getDb())
+        .collection("jogosGerados")
+        .find({ dezenas: { $size: 15 } }, { projection: { dezenas: 1 } })
+        .toArray();
+      const chaves = new Set(existentes.map((j) => [...j.dezenas].sort((a, b) => a - b).join(",")));
+      manuais = gerarJogosQuinzena(quantidadeJogos, 15, chaves);
+    } else {
+      manuais = Array.isArray(body.jogosManuais)
         ? body.jogosManuais
         : null;
+    }
     if (manuais) {
       const valido =
         manuais.length >= 1 &&
