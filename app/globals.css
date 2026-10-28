@@ -41,7 +41,7 @@ body {
 }
 
 main {
-  max-width: 640px;
+  max-width: 840px;
   margin: -1.5rem auto 0;
   padding: 0 1rem 2rem;
 }
@@ -615,6 +615,8 @@ main {
 }
 
 .lote-sorteados {
+  white-space: nowrap;
+  overflow-x: auto;
   margin: 0.25rem 0 0.75rem;
   color: var(--cor-texto-secundario);
   font-size: 0.85rem;
