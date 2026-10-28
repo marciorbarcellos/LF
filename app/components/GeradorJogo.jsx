@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Paginacao from "@/app/components/Paginacao";
 import EscolhaModal from "@/app/components/EscolhaModal";
 import QuinzenaModal from "@/app/components/QuinzenaModal";
+import PremiosModal from "@/app/components/PremiosModal";
 import AvisoModal from "@/app/components/AvisoModal";
 import { valorTotal, formatarMoeda, rotuloDezenas } from "@/lib/precos";
 
@@ -43,6 +44,7 @@ export default function GeradorJogo() {
   const [paginacao, setPaginacao] = useState(null);
   const [sorteios, setSorteios] = useState({});
   const [escolhaAberta, setEscolhaAberta] = useState(false);
+  const [premiosAberto, setPremiosAberto] = useState(false);
   const [quinzenaAberta, setQuinzenaAberta] = useState(false);
   const [avisoVisto, setAvisoVisto] = useState(false);
 
@@ -110,10 +112,21 @@ export default function GeradorJogo() {
       <div className="card">
         {/* <h2>Gerar jogos</h2> */}
         {ultimoConcurso && (
-          <p className="texto-secundario">
-            Próximo concurso: <strong>{ultimoConcurso.numeroConcursoProximo}</strong> em{" "}
-            {ultimoConcurso.dataProximoConcurso}
-          </p>
+          <div className="proximo-concurso">
+            <p className="texto-secundario">
+              Próximo concurso: <strong>{ultimoConcurso.numeroConcursoProximo}</strong> em{" "}
+              {ultimoConcurso.dataProximoConcurso}
+            </p>
+            <button
+              type="button"
+              className="botao-premios"
+              onClick={() => setPremiosAberto(true)}
+              aria-label="Ver distribuição dos prêmios"
+              title="Distribuição dos prêmios"
+            >
+              🏆
+            </button>
+          </div>
         )}
 
         <div className="controles">
@@ -159,6 +172,8 @@ export default function GeradorJogo() {
           </button>
         </div>
       </div>
+
+      <PremiosModal aberto={premiosAberto} onFechar={() => setPremiosAberto(false)} />
 
       {quinzenaAberta && (
         <QuinzenaModal

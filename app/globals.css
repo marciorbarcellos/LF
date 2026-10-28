@@ -66,6 +66,49 @@ main {
   font-size: 0.9rem;
 }
 
+.proximo-concurso {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.proximo-concurso p {
+  margin: 0;
+}
+
+.botao-premios {
+  background: transparent;
+  border: 1px solid var(--cor-borda);
+  border-radius: 8px;
+  padding: 0.3rem 0.55rem;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.botao-premios:hover {
+  background: var(--cor-fundo);
+  border-color: var(--cor-primaria);
+}
+
+.tabela-premios {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.tabela-premios th,
+.tabela-premios td {
+  padding: 0.5rem;
+  text-align: left;
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.tabela-premios th {
+  color: var(--cor-texto-secundario);
+  font-size: 0.8rem;
+}
+
 .controles {
   display: flex;
   flex-wrap: wrap;
