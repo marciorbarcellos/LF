@@ -622,6 +622,13 @@ main {
   font-size: 0.85rem;
 }
 
+@media (max-width: 640px) {
+  .lote-sorteados {
+    white-space: normal;
+    overflow-x: visible;
+  }
+}
+
 .lote-recente-aviso {
   margin: 0 0 0.75rem;
   color: var(--cor-cta);
