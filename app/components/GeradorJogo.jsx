@@ -41,6 +41,7 @@ export default function GeradorJogo() {
   const [erro, setErro] = useState(null);
   const [pagina, setPagina] = useState(1);
   const [paginacao, setPaginacao] = useState(null);
+  const [sorteios, setSorteios] = useState({});
   const [escolhaAberta, setEscolhaAberta] = useState(false);
   const [quinzenaAberta, setQuinzenaAberta] = useState(false);
   const [avisoVisto, setAvisoVisto] = useState(false);
@@ -54,6 +55,7 @@ export default function GeradorJogo() {
       setUltimoConcurso(data.ultimoConcurso);
       setAvisoFonteDados(data.avisoFonteDados ?? null);
       setPaginacao(data.paginacao ?? null);
+      setSorteios(data.sorteios ?? {});
       setPagina(paginaAlvo);
     } catch (e) {
       setErro(e.message);
@@ -196,6 +198,18 @@ export default function GeradorJogo() {
               {grupo.jogos.length} {grupo.jogos.length === 1 ? "jogo" : "jogos"} ·{" "}
               {rotuloDezenas(grupo.jogos)} · {formatarMoeda(valorTotal(grupo.jogos))}
             </div>
+            <p className="lote-sorteados">
+              {sorteios[grupo.concursoAlvo] ? (
+                <>
+                  <strong>Números sorteados:</strong>{" "}
+                  {sorteios[grupo.concursoAlvo]
+                    .map((d) => String(d).padStart(2, "0"))
+                    .join(" – ")}
+                </>
+              ) : (
+                "Aguardando sorteio..."
+              )}
+            </p>
             {pagina === 1 && indice === 0 && (
               <p className="lote-recente-aviso">Aguardando o próximo sorteio · os demais abaixo são histórico</p>
             )}

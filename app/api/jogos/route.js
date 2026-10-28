@@ -205,7 +205,29 @@ export async function GET(request) {
       })
     );
 
-    return NextResponse.json({ ok: true, ultimoConcurso: ultimo, jogos: jogosComConferencia, paginacao });
+    // Dezenas sorteadas de cada concurso já realizado presente na página.
+    const sorteios = {};
+    const concursos = [...new Set(jogos.map((j) => j.concursoAlvo))].filter(
+      (c) => c && c <= ultimo.numero
+    );
+    await Promise.all(
+      concursos.map(async (c) => {
+        try {
+          const sorteio = cacheConcursos.get(c) ?? (await buscarConcurso(c));
+          sorteios[c] = sorteio.dezenas;
+        } catch {
+          // sem resultado disponível: a tela mostra "Aguardando sorteio..."
+        }
+      })
+    );
+
+    return NextResponse.json({
+      ok: true,
+      ultimoConcurso: ultimo,
+      jogos: jogosComConferencia,
+      sorteios,
+      paginacao,
+    });
   } catch (error) {
     return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
   }
