@@ -641,6 +641,45 @@ main {
   }
 }
 
+.lote-premiados {
+  margin: 0 0 0.75rem;
+  font-size: 0.85rem;
+  color: var(--cor-texto-secundario);
+}
+
+.link-premiados {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 700;
+  color: var(--cor-secundaria);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.link-premiados:hover {
+  color: #004f8a;
+}
+
+.modal-caixa-premiados {
+  max-width: 820px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.premiados-lista {
+  overflow-y: auto;
+}
+
+@media (min-width: 641px) {
+  .premiados-sorteados {
+    white-space: nowrap;
+    overflow-x: auto;
+  }
+}
+
 .lote-recente-aviso {
   margin: 0 0 0.75rem;
   color: var(--cor-cta);

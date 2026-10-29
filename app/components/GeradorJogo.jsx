@@ -5,6 +5,7 @@ import Paginacao from "@/app/components/Paginacao";
 import EscolhaModal from "@/app/components/EscolhaModal";
 import QuinzenaModal from "@/app/components/QuinzenaModal";
 import PremiosModal from "@/app/components/PremiosModal";
+import PremiadosModal from "@/app/components/PremiadosModal";
 import AvisoModal from "@/app/components/AvisoModal";
 import { valorTotal, formatarMoeda, rotuloDezenas } from "@/lib/precos";
 
@@ -45,6 +46,7 @@ export default function GeradorJogo() {
   const [sorteios, setSorteios] = useState({});
   const [escolhaAberta, setEscolhaAberta] = useState(false);
   const [premiosAberto, setPremiosAberto] = useState(false);
+  const [grupoPremiados, setGrupoPremiados] = useState(null);
   const [atualizando, setAtualizando] = useState(false);
   const [infoAtualizacao, setInfoAtualizacao] = useState(false);
   const [quinzenaAberta, setQuinzenaAberta] = useState(false);
@@ -221,6 +223,12 @@ export default function GeradorJogo() {
         onFechar={() => setInfoAtualizacao(false)}
       />
 
+      <PremiadosModal
+        grupo={grupoPremiados}
+        sorteados={grupoPremiados ? (sorteios[grupoPremiados.concursoAlvo] ?? []) : []}
+        onFechar={() => setGrupoPremiados(null)}
+      />
+
       <PremiosModal aberto={premiosAberto} onFechar={() => setPremiosAberto(false)} />
 
       {quinzenaAberta && (
@@ -273,6 +281,19 @@ export default function GeradorJogo() {
                 "Aguardando sorteio..."
               )}
             </p>
+            {sorteios[grupo.concursoAlvo] &&
+              (() => {
+                const total = grupo.jogos.filter((j) => j.conferencia && j.conferencia.acertos >= 11).length;
+                return total > 0 ? (
+                  <p className="lote-premiados">
+                    <button type="button" className="link-premiados" onClick={() => setGrupoPremiados(grupo)}>
+                      {total} {total === 1 ? "jogo acertou" : "jogos acertaram"} a partir de 11 números
+                    </button>
+                  </p>
+                ) : (
+                  <p className="lote-premiados">Nenhum jogo acertou 11 números ou mais</p>
+                );
+              })()}
             {pagina === 1 && indice === 0 && (
               <p className="lote-recente-aviso">Aguardando o próximo sorteio · os demais abaixo são histórico</p>
             )}
