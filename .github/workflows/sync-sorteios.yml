@@ -7,6 +7,8 @@ on:
     - cron: "*/20 0,1 * * *"
     # Rede de segurança: uma passada ao meio-dia (BRT) para pegar atrasos de publicação.
     - cron: "0 15 * * *"
+    # Todos os dias às 07h (BRT): garante que o app fique em dia com o site da Caixa.
+    - cron: "0 10 * * *"
   workflow_dispatch:
   push:
     paths:

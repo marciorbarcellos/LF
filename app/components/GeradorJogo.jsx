@@ -45,6 +45,8 @@ export default function GeradorJogo() {
   const [sorteios, setSorteios] = useState({});
   const [escolhaAberta, setEscolhaAberta] = useState(false);
   const [premiosAberto, setPremiosAberto] = useState(false);
+  const [atualizando, setAtualizando] = useState(false);
+  const [infoAtualizacao, setInfoAtualizacao] = useState(false);
   const [quinzenaAberta, setQuinzenaAberta] = useState(false);
   const [avisoVisto, setAvisoVisto] = useState(false);
 
@@ -97,6 +99,23 @@ export default function GeradorJogo() {
     }
   }
 
+  async function atualizarResultados() {
+    setAtualizando(true);
+    setErro(null);
+    try {
+      const res = await fetch("/api/atualizar-sorteios", { method: "POST" });
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error);
+      setInfoAtualizacao(true);
+      // O workflow leva cerca de 30s e o app lê o arquivo com cache de 60s.
+      setTimeout(() => carregarJogos(pagina), 90000);
+    } catch (e) {
+      setErro(e.message);
+    } finally {
+      setAtualizando(false);
+    }
+  }
+
   async function gerarJogosEscolhidos(selecoes, dezenasPorJogo) {
     const ok = await gerarJogos({ quantidade: dezenasPorJogo, jogosManuais: selecoes });
     if (ok) {
@@ -128,6 +147,16 @@ export default function GeradorJogo() {
               >
                 🔢
               </a>
+              <button
+                type="button"
+                className="botao-premios"
+                onClick={atualizarResultados}
+                disabled={atualizando}
+                aria-label="Atualizar resultados"
+                title="Atualizar resultados com o site da CAIXA"
+              >
+                🔄
+              </button>
               <button
                 type="button"
                 className="botao-premios"
@@ -184,6 +213,13 @@ export default function GeradorJogo() {
           </button>
         </div>
       </div>
+
+      <AvisoModal
+        aberto={infoAtualizacao}
+        titulo="Atualização solicitada"
+        mensagem="Os resultados estão sendo buscados no site da CAIXA. A lista será atualizada automaticamente em cerca de 1 a 2 minutos."
+        onFechar={() => setInfoAtualizacao(false)}
+      />
 
       <PremiosModal aberto={premiosAberto} onFechar={() => setPremiosAberto(false)} />
 

@@ -93,6 +93,11 @@ main {
   cursor: pointer;
 }
 
+.botao-premios:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
 .botao-premios:hover {
   background: var(--cor-fundo);
   border-color: var(--cor-primaria);
