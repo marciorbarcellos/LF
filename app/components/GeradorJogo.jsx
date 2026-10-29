@@ -117,15 +117,27 @@ export default function GeradorJogo() {
               Próximo concurso: <strong>{ultimoConcurso.numeroConcursoProximo}</strong> em{" "}
               {ultimoConcurso.dataProximoConcurso}
             </p>
-            <button
-              type="button"
-              className="botao-premios"
-              onClick={() => setPremiosAberto(true)}
-              aria-label="Ver distribuição dos prêmios"
-              title="Distribuição dos prêmios"
-            >
-              🏆
-            </button>
+            <div className="proximo-concurso-acoes">
+              <a
+                className="botao-premios"
+                href="https://loterias.caixa.gov.br/Paginas/Lotofacil.aspx"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Ver números sorteados no site da CAIXA"
+                title="Números sorteados (site da CAIXA)"
+              >
+                🔢
+              </a>
+              <button
+                type="button"
+                className="botao-premios"
+                onClick={() => setPremiosAberto(true)}
+                aria-label="Ver distribuição dos prêmios"
+                title="Distribuição dos prêmios"
+              >
+                🏆
+              </button>
+            </div>
           </div>
         )}
 

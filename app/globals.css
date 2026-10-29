@@ -77,7 +77,14 @@ main {
   margin: 0;
 }
 
+.proximo-concurso-acoes {
+  display: flex;
+  gap: 0.5rem;
+}
+
 .botao-premios {
+  text-decoration: none;
+  line-height: 1.2;
   background: transparent;
   border: 1px solid var(--cor-borda);
   border-radius: 8px;
