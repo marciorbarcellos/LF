@@ -228,12 +228,6 @@ export default function GeradorJogo() {
             QUINZENA
           </button>
         </div>
-
-        <p className="texto-secundario nota-cosmetica">
-          Jogos de 15 dezenas nunca repetem uma combinação que já saiu em algum sorteio real da CAIXA —
-          um extra de curiosidade, sem efeito na sua chance de acerto (todas as combinações continuam
-          igualmente prováveis).
-        </p>
       </div>
 
       {cobertura && (
@@ -254,9 +248,7 @@ export default function GeradorJogo() {
           {cobertura.temEstimativa && (
             <p className="texto-secundario cobertura-estimativa">
               + {cobertura.jogos16a20.toLocaleString("pt-BR")} jogo(s) de 16 a 20 dezenas somam até{" "}
-              {formatarPercentual(cobertura.percentualComEstimativa)} de cobertura estimada (pode haver
-              sobreposição entre combinações cobertas por jogos diferentes — este número é um limite
-              superior, não uma contagem exata).
+              {formatarPercentual(cobertura.percentualComEstimativa)} de cobertura estimada
             </p>
           )}
         </div>
