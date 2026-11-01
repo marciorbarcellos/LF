@@ -8,6 +8,7 @@ import PremiosModal from "@/app/components/PremiosModal";
 import PremiadosModal from "@/app/components/PremiadosModal";
 import AvisoModal from "@/app/components/AvisoModal";
 import { valorTotal, formatarMoeda, rotuloDezenas } from "@/lib/precos";
+import { formatarPercentual } from "@/lib/cobertura";
 
 function Dezena({ numero, estado }) {
   const classe =
@@ -51,6 +52,17 @@ export default function GeradorJogo() {
   const [infoAtualizacao, setInfoAtualizacao] = useState(false);
   const [quinzenaAberta, setQuinzenaAberta] = useState(false);
   const [avisoVisto, setAvisoVisto] = useState(false);
+  const [cobertura, setCobertura] = useState(null);
+
+  async function carregarCobertura() {
+    try {
+      const res = await fetch("/api/cobertura");
+      const data = await res.json();
+      if (data.ok) setCobertura(data);
+    } catch {
+      // Indicador decorativo: se falhar, só não mostra, sem travar o resto da tela.
+    }
+  }
 
   async function carregarJogos(paginaAlvo = pagina) {
     try {
@@ -70,6 +82,7 @@ export default function GeradorJogo() {
 
   useEffect(() => {
     carregarJogos(1);
+    carregarCobertura();
   }, []);
 
   async function gerarJogos(corpo = { quantidade, quantidadeJogos }) {
@@ -84,6 +97,7 @@ export default function GeradorJogo() {
       const data = await res.json();
       if (!data.ok) throw new Error(data.error);
       await carregarJogos(1);
+      carregarCobertura();
       return true;
     } catch (e) {
       setErro(e.message);
@@ -215,6 +229,32 @@ export default function GeradorJogo() {
           </button>
         </div>
       </div>
+
+      {cobertura && (
+        <div className="card">
+          <h2>Cobertura acumulada</h2>
+          <p className="texto-secundario">
+            {cobertura.combinacoesExatas.toLocaleString("pt-BR")} de{" "}
+            {cobertura.totalCombinacoes.toLocaleString("pt-BR")} combinações de 15 dezenas já geradas
+            (distintas, sem repetir) — {formatarPercentual(cobertura.percentualExato)} de cobertura
+            exata.
+          </p>
+          <div className="barra-cobertura">
+            <div
+              className="barra-cobertura-preenchida"
+              style={{ width: `${Math.max(cobertura.percentualExato, 0.3)}%` }}
+            />
+          </div>
+          {cobertura.temEstimativa && (
+            <p className="texto-secundario cobertura-estimativa">
+              + {cobertura.jogos16a20.toLocaleString("pt-BR")} jogo(s) de 16 a 20 dezenas somam até{" "}
+              {formatarPercentual(cobertura.percentualComEstimativa)} de cobertura estimada (pode haver
+              sobreposição entre combinações cobertas por jogos diferentes — este número é um limite
+              superior, não uma contagem exata).
+            </p>
+          )}
+        </div>
+      )}
 
       <AvisoModal
         aberto={infoAtualizacao}

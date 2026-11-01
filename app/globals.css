@@ -688,3 +688,23 @@ main {
   text-transform: uppercase;
   letter-spacing: 0.02em;
 }
+
+.barra-cobertura {
+  margin-top: 0.75rem;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--cor-fundo);
+  border: 1px solid var(--cor-borda);
+  overflow: hidden;
+}
+
+.barra-cobertura-preenchida {
+  height: 100%;
+  background: var(--cor-primaria);
+  border-radius: 999px;
+  transition: width 0.3s;
+}
+
+.cobertura-estimativa {
+  margin-top: 0.5rem;
+}
