@@ -228,6 +228,12 @@ export default function GeradorJogo() {
             QUINZENA
           </button>
         </div>
+
+        <p className="texto-secundario nota-cosmetica">
+          Jogos de 15 dezenas nunca repetem uma combinação que já saiu em algum sorteio real da CAIXA —
+          um extra de curiosidade, sem efeito na sua chance de acerto (todas as combinações continuam
+          igualmente prováveis).
+        </p>
       </div>
 
       {cobertura && (

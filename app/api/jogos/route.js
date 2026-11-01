@@ -3,7 +3,7 @@ import { ObjectId } from "mongodb";
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/mongodb";
 import { gerarDezenas, gerarJogosQuinzena } from "@/lib/gerarJogo";
-import { buscarUltimoConcurso, buscarConcurso } from "@/lib/caixa";
+import { buscarUltimoConcurso, buscarConcurso, buscarTodasDezenasHistoricas } from "@/lib/caixa";
 
 export async function POST(request) {
   try {
@@ -18,12 +18,17 @@ export async function POST(request) {
     const quinzena = body.estrategia === "quinzena";
     let manuais;
     if (quinzena) {
-      // Não repete sequências de 15 dezenas que já foram geradas antes.
-      const existentes = await (await getDb())
-        .collection("jogosGerados")
-        .find({ dezenas: { $size: 15 } }, { projection: { dezenas: 1 } })
-        .toArray();
+      // Não repete sequências de 15 dezenas que já foram geradas antes, nem uma
+      // que já saiu de verdade em algum sorteio (extra cosmético).
+      const [existentes, historicas] = await Promise.all([
+        (await getDb())
+          .collection("jogosGerados")
+          .find({ dezenas: { $size: 15 } }, { projection: { dezenas: 1 } })
+          .toArray(),
+        buscarTodasDezenasHistoricas(),
+      ]);
       const chaves = new Set(existentes.map((j) => [...j.dezenas].sort((a, b) => a - b).join(",")));
+      for (const chave of historicas) chaves.add(chave);
       manuais = gerarJogosQuinzena(quantidadeJogos, 15, chaves);
     } else {
       manuais = Array.isArray(body.jogosManuais)
@@ -60,11 +65,16 @@ export async function POST(request) {
       concursoAlvo = null;
     }
 
+    // Extra cosmético: no modo padrão com jogos de 15 dezenas, também evita
+    // gerar uma combinação idêntica a um sorteio que já aconteceu de verdade.
+    const historicas =
+      !manuais && quantidade === 15 ? await buscarTodasDezenasHistoricas() : new Set();
+
     const loteId = randomUUID();
     const criadoEm = new Date();
     const docs = Array.from({ length: manuais ? manuais.length : quantidadeJogos }, (_, i) => ({
       concursoAlvo,
-      dezenas: manuais ? [...manuais[i]].sort((a, b) => a - b) : gerarDezenas(quantidade),
+      dezenas: manuais ? [...manuais[i]].sort((a, b) => a - b) : gerarDezenas(quantidade, historicas),
       loteId,
       criadoEm,
     }));
