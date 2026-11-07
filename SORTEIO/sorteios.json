@@ -998,5 +998,30 @@
     "dataProximoConcurso": "06/11/2026",
     "acumulado": false,
     "valorEstimadoProximoConcurso": 2000000
+  },
+  {
+    "numero": 3823,
+    "dataApuracao": "06/11/2026",
+    "dezenas": [
+      3,
+      6,
+      7,
+      8,
+      10,
+      11,
+      15,
+      16,
+      17,
+      18,
+      20,
+      21,
+      22,
+      23,
+      24
+    ],
+    "numeroConcursoProximo": 3824,
+    "dataProximoConcurso": "08/11/2026",
+    "acumulado": false,
+    "valorEstimadoProximoConcurso": 2000000
   }
 ]
