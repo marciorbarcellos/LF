@@ -1223,5 +1223,30 @@
     "dataProximoConcurso": "17/11/2026",
     "acumulado": false,
     "valorEstimadoProximoConcurso": 2000000
+  },
+  {
+    "numero": 3832,
+    "dataApuracao": "17/11/2026",
+    "dezenas": [
+      1,
+      3,
+      5,
+      7,
+      10,
+      11,
+      12,
+      13,
+      14,
+      16,
+      17,
+      18,
+      19,
+      20,
+      23
+    ],
+    "numeroConcursoProximo": 3833,
+    "dataProximoConcurso": "18/11/2026",
+    "acumulado": true,
+    "valorEstimadoProximoConcurso": 5000000
   }
 ]
